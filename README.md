@@ -1,167 +1,128 @@
-<!--
-title: 'Serverless Framework Python Flask API backed by DynamoDB on AWS'
-description: 'This template demonstrates how to develop and deploy a simple Python Flask API service backed by DynamoDB running on AWS Lambda using the traditional Serverless Framework.'
-layout: Doc
-framework: v3
-platform: AWS
-language: Python
-priority: 2
-authorLink: 'https://github.com/serverless'
-authorName: 'Serverless, inc.'
-authorAvatar: 'https://avatars1.githubusercontent.com/u/13742415?s=200&v=4'
--->
+# Teste - NTT Data
 
-# Serverless Framework Python Flask API service backed by DynamoDB on AWS
+Essa codebase serve para demonstrar o funcionamento de um CRUD simples usando uma API, conforme solicitado.
 
-This template demonstrates how to develop and deploy a simple Python Flask API service, backed by DynamoDB, running on AWS Lambda using the traditional Serverless Framework.
+## How it works
 
+Esse teste foi desenvolvido usando o serverless framework, e 100% dos recursos necessarios sao deployados usando um simples "serverless deploy", assumindo que as credenciais da AWS estejam setadas corretamente e como default (voce pode passa-las como parametro tambem)
 
-## Anatomy of the template
+## Uso
 
-This template configures a single function, `api`, which is responsible for handling all incoming requests thanks to configured `httpApi` events. To learn more about `httpApi` event configuration options, please refer to [httpApi event docs](https://www.serverless.com/framework/docs/providers/aws/events/http-api/). As the events are configured in a way to accept all incoming requests, `Flask` framework is responsible for routing and handling requests internally. The implementation takes advantage of `serverless-wsgi`, which allows you to wrap WSGI applications such as Flask apps. To learn more about `serverless-wsgi`, please refer to corresponding [GitHub repository](https://github.com/logandk/serverless-wsgi). The template also relies on `serverless-python-requirements` plugin for packaging dependencies from `requirements.txt` file. For more details about `serverless-python-requirements` configuration, please refer to corresponding [GitHub repository](https://github.com/UnitedIncome/serverless-python-requirements).
+### Pré-requisitos
 
-Additionally, the template also handles provisioning of a DynamoDB database that is used for storing data about users. The Flask application exposes two endpoints, `POST /users` and `GET /user/{userId}`, which allow to create and retrieve users.
-
-## Usage
-
-### Prerequisites
-
-In order to package your dependencies locally with `serverless-python-requirements`, you need to have `Python3.9` installed locally. You can create and activate a dedicated virtual environment with the following command:
+* Voce precisa ter o Python 3.9 instalado localmente para fazer as dependencias funcionarem. Vc pode criar um virtualenv com tudo rodando:
 
 ```bash
 python3.9 -m venv ./venv
 source ./venv/bin/activate
 ```
 
-Alternatively, you can also use `dockerizePip` configuration from `serverless-python-requirements`. For details on that, please refer to corresponding [GitHub repository](https://github.com/UnitedIncome/serverless-python-requirements).
+Como alternativa, você também pode usar a configuração `dockerizePip` de `serverless-python-requirements`. Para obter detalhes sobre isso, consulte o repositório GitHub correspondente (https://github.com/UnitedIncome/serverless-python-requirements).
 
-### Deployment
+* Voce tambem vai precisar do AWS CLI instalado e com as credenciais de seguranca corretamente setadas, ou pelo menos chaves AWS disponiveis para deployment, com policies Lambda, DynamoDB, e APIGateway setadas, no minimo.
 
-This example is made to work with the Serverless Framework dashboard, which includes advanced features such as CI/CD, monitoring, metrics, etc.
+### Implantação
 
-In order to deploy with dashboard, you need to first login with:
+Este exemplo foi feito para funcionar com o painel do Serverless Framework.
 
-```
-serverless login
-```
-
-install dependencies with:
+Primeiro instale as dependencias do Serverless e plugins:
 
 ```
 npm install
 ```
 
-and then perform deployment with:
+E, em seguida, execute o deployment com:
 
 ```
 serverless deploy
 ```
 
-After running deploy, you should see output similar to:
+Depois de executar o deploy, você deve ver uma saída semelhante a:
 
 ```bash
-Deploying aws-python-flask-dynamodb-api-project to stage dev (us-east-1)
+% serverless deploy 
+Running "serverless" from node_modules
+	
+Deploying nttdata-interview to stage dev (us-east-1)
+Using Python specified in "runtime": python3.9
+Packaging Python WSGI handler...
 
-✔ Service deployed to stack aws-python-flask-dynamodb-api-project-dev (182s)
+✔ Service deployed to stack nttdata-interview-dev (126s)
 
-endpoint: ANY - https://xxxxxxxx.execute-api.us-east-1.amazonaws.com
+endpoint: ANY - https://xyzabcfoobar.execute-api.us-east-1.amazonaws.com
 functions:
-  api: aws-python-flask-dynamodb-api-project-dev-api (1.5 MB)
+  api: nttdata-interview-dev-api (1.5 MB)
+
+Monitor all your API routes with Serverless Console: run "serverless --console"
 ```
 
-_Note_: In current form, after deployment, your API is public and can be invoked by anyone. For production deployments, you might want to configure an authorizer. For details on how to do that, refer to [httpApi event docs](https://www.serverless.com/framework/docs/providers/aws/events/http-api/).
+_Nota_: Na forma atual, após a implantação, sua API é pública e pode ser invocada por qualquer pessoa. Para implantações de produção, convém configurar um authorizer. Para detalhes sobre como fazer isso, consulte [httpApi event docs](https://www.serverless.com/framework/docs/providers/aws/events/http-api/).
 
-### Invocation
 
-After successful deployment, you can create a new user by calling the corresponding endpoint:
+### Invocação
+
+Após o deploy bem-sucedido, você pode criar um novo usuário chamando o endpoint correspondente:
+
+Para criar (Create): 
 
 ```bash
-curl --request POST 'https://xxxxxx.execute-api.us-east-1.amazonaws.com/users' --header 'Content-Type: application/json' --data-raw '{"name": "John", "userId": "someUserId"}'
+curl --request POST 'https://xyzabcfoobar.execute-api.us-east-1.amazonaws.com/users' --header 'Content-Type: application/json' --data-raw '{"username": "joao.maria", "userId": "someUserId"}'
 ```
 
-Which should result in the following response:
+O que deve resultar na seguinte resposta:
 
 ```bash
-{"userId":"someUserId","name":"John"}
+{"userId":"someUserId","username":"joao.maria"}
 ```
 
-You can later retrieve the user by `userId` by calling the following endpoint:
+Para buscar o usuario (Retrieve)
 
 ```bash
-curl https://xxxxxxx.execute-api.us-east-1.amazonaws.com/users/someUserId
+curl https://xyzabcfoobar.execute-api.us-east-1.amazonaws.com/users/someUserId
 ```
 
-Which should result in the following response:
+O que deve resultar na seguinte resposta:
 
 ```bash
-{"userId":"someUserId","name":"John"}
+{"userId":"someUserId","username":"joao.maria"}
 ```
 
-If you try to retrieve user that does not exist, you should receive the following response:
+Se você tentar buscar um usuário que não existe, deverá receber a seguinte resposta:
 
 ```bash
-{"error":"Could not find user with provided \"userId\""}
+{"error":"Não foi possível encontrar o usuário com o \"userId\""} 
 ```
 
-### Local development
-
-Thanks to capabilities of `serverless-wsgi`, it is also possible to run your application locally, however, in order to do that, you will need to first install `werkzeug`, `boto3` dependencies, as well as all other dependencies listed in `requirements.txt`. It is recommended to use a dedicated virtual environment for that purpose. You can install all needed dependencies with the following commands:
+Para modificar o usuario (update):
 
 ```bash
-pip install werkzeug boto3
-pip install -r requirements.txt
+curl --request PUT 'https://xyzabcfoobar.execute-api.us-east-1.amazonaws.com/users/joao.maria-userId' --header 'Content-Type: application/json' --data-raw '{"username": "joao.maria.newusername", "userId": "joao.maria-userId"}'
 ```
 
-Additionally, you will need to emulate DynamoDB locally, which can be done by using `serverless-dynamodb-local` plugin. In order to do that, execute the following commands:
+O que deve resultar na seguinte resposta:
 
 ```bash
-serverless plugin install -n serverless-dynamodb-local
-serverless dynamodb install
+{"userId":"someUserId","username":"joao.maria"}
 ```
 
-It will add the plugin to `devDependencies` in `package.json` file as well as to `plugins` section in `serverless.yml`. Additionally, it will also install DynamoDB locally.
-
-You should also add the following config to `custom` section in `serverless.yml`:
-
-
-```yml
-custom:
-  (...)
-  dynamodb:
-    start:
-      migrate: true
-    stages:
-      - dev
-```
-
-Additionally, we need to reconfigure DynamoDB Client to connect to our local instance of DynamoDB. We can take advantage of `IS_OFFLINE` environment variable set by `serverless-wsgi` plugin and replace:
-
-
-```python
-dynamodb_client = boto3.client('dynamodb')
-```
-
-with
-
-```python
-dynamodb_client = boto3.client('dynamodb')
-
-if os.environ.get('IS_OFFLINE'):
-    dynamodb_client = boto3.client('dynamodb', region_name='localhost', endpoint_url='http://localhost:8000')
-```
-
-Now you can start DynamoDB local with the following command:
+Para deletar o usuario (delete):
 
 ```bash
-serverless dynamodb start
+curl --request DELETE 'https://xyzabcfoobar.execute-api.us-east-1.amazonaws.com/users/joao.maria-userId'
 ```
 
-At this point, you can run your application locally with the following command:
+O que deve resultar na seguinte resposta:
 
 ```bash
-serverless wsgi serve
+{"userId":"someUserId","username":"joao.maria has been removed"} 
 ```
 
-For additional local development capabilities of `serverless-wsgi` and `serverless-dynamodb-local` plugins, please refer to corresponding GitHub repositories:
-- https://github.com/logandk/serverless-wsgi 
-- https://github.com/99x/serverless-dynamodb-local
+### Remover o ambiente:
+
+digite o seguinte comando para remover:
+
+```
+serverless remove
+```
+
+E aguarde a finalizacao
