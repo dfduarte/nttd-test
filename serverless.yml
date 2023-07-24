@@ -1,4 +1,4 @@
-service: aws-python-flask-dynamodb-api-project
+service: nttdata-api-project
 
 frameworkVersion: '3'
 
